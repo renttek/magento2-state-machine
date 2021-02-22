@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Renttek_StateMachine:etc/state_machine.xsd">
+    <state_machine name="pull_request">
+        <initial_state>start</initial_state>
+        <states>
+            <state name="start" translate="true">Start</state>
+            <state name="coding" translate="true">Coding</state>
+            <state name="test" translate="true">Test</state>
+            <state name="review" translate="true">Review</state>
+            <state name="merged" translate="true">Merged</state>
+            <state name="closed" translate="true">Closed</state>
+        </states>
+        <transitions>
+            <transition name="submit">
+                <label translate="true">Submit</label>
+                <from name="start"/>
+                <to name="test"/>
+            </transition>
+            <transition name="update">
+                <label translate="true">Update</label>
+                <from name="coding"/>
+                <from name="review"/>
+                <to name="test"/>
+            </transition>
+            <transition name="wait_for_review">
+                <label translate="true">Wait for Review</label>
+                <from name="test"/>
+                <to name="review"/>
+            </transition>
+            <transition name="request_change">
+                <label translate="true">Request Change</label>
+                <from name="review"/>
+                <to name="coding"/>
+            </transition>
+            <transition name="accept">
+                <label translate="true">Accept</label>
+                <from name="review"/>
+                <to name="merged"/>
+            </transition>
+            <transition name="reject">
+                <label translate="true">Reject</label>
+                <from name="review"/>
+                <to name="closed"/>
+            </transition>
+            <transition name="reopen">
+                <label translate="true">Reopen</label>
+                <from name="closed"/>
+                <to name="review"/>
+            </transition>
+        </transitions>
+    </state_machine>
+</config>

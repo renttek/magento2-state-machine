@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Renttek\StateMachine\Model\Config\Reader">
+        <arguments>
+            <argument name="fileName" xsi:type="string">state_machine.xml</argument>
+            <argument name="converter" xsi:type="object">Renttek\StateMachine\Model\Config\Converter</argument>
+            <argument name="schemaLocator" xsi:type="object">Renttek\StateMachine\Model\Config\SchemaLocator</argument>
+            <argument name="idAttributes" xsi:type="array">
+                <item name="/config/state_machine" xsi:type="string">name</item>
+                <item name="/config/state_machine/transitions/transition" xsi:type="string">name</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <virtualType name="Renttek\StateMachine\Virtual\Model\Config\DataStorage" type="Magento\Framework\Config\Data">
+        <arguments>
+            <argument name="reader" xsi:type="object">Renttek\StateMachine\Model\Config\Reader</argument>
+            <argument name="cacheId" xsi:type="string">state_machine_config</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Renttek\StateMachine\Model\Config">
+        <arguments>
+            <argument name="dataStorage" xsi:type="object">Renttek\StateMachine\Virtual\Model\Config\DataStorage</argument>
+        </arguments>
+    </type>
+</config>

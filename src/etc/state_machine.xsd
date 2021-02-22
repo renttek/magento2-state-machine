@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="config">
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="state_machine" type="stateMachineType"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="stateMachineType">
+        <xs:sequence>
+            <xs:element minOccurs="1" maxOccurs="1" name="initial_state" type="xs:string"/>
+            <xs:element minOccurs="1" maxOccurs="1" name="states" type="statesType"/>
+            <xs:element minOccurs="1" maxOccurs="1" name="transitions" type="transitionsType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="statesType">
+        <xs:sequence>
+            <xs:element minOccurs="1" maxOccurs="unbounded" name="state" type="stateType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="stateType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="name" use="required" type="xs:string"/>
+                <xs:attribute name="translate" use="optional" default="false" type="xs:boolean"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="transitionsType">
+        <xs:sequence>
+            <xs:element minOccurs="1" maxOccurs="unbounded" name="transition" type="transitionType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="transitionType">
+        <xs:sequence>
+            <xs:element minOccurs="1" maxOccurs="1" name="label" type="labelType"/>
+            <xs:element minOccurs="1" maxOccurs="unbounded" name="from" type="fromType"/>
+            <xs:element minOccurs="1" maxOccurs="1" name="to" type="toType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="fromType">
+        <xs:attribute name="name" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="toType">
+        <xs:attribute name="name" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="labelType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="translate" use="optional" default="false" type="xs:boolean"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="phpClassName">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(\\?[a-zA-Z_&#x7f;-&#xff;][a-zA-Z0-9_&#x7f;-&#xff;]*)(\\[a-zA-Z_&#x7f;-&#xff;][a-zA-Z0-9_&#x7f;-&#xff;]*)*"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>
