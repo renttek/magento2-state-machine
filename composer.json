@@ -1,8 +1,8 @@
 {
-    "name": "renttek/state-machine",
+    "name": "renttek/magento2-state-machine",
     "description": "Simple state machine module for magento 2",
-    "type": "magento2-module",
     "license": "MIT",
+    "type": "magento2-module",
     "authors": [
         {
             "name": "Julian Nuß",
@@ -10,45 +10,42 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.1",
         "ext-dom": "*",
         "magento/framework": "*"
     },
-    "autoload": {
-        "files": [
-            "registration.php"
-        ],
-        "psr-4": {
-            "Renttek\\StateMachine\\": "src"
-        }
+    "require-dev": {
+        "ergebnis/composer-normalize": "^2.47",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^10.5",
+        "rector/rector": "^2.1",
+        "roave/security-advisories": "dev-latest",
+        "symplify/easy-coding-standard": "^12.5",
+        "phpstan/extension-installer": "^1.4"
     },
     "repositories": [
         {
-            "cannonical": false,
             "type": "composer",
-            "url": "https://repo.magento.com/"
+            "url": "https://mirror.mage-os.org/",
+            "only": [
+                "mage-os/*",
+                "magento/*"
+            ]
         }
     ],
-    "require-dev": {
-        "roave/security-advisories": "dev-master",
-        "phpstan/phpstan": "^0.12.64",
-        "squizlabs/php_codesniffer": "^3.5",
-        "magento/magento-coding-standard": "@dev",
-        "phpmd/phpmd": "^2.9",
-        "phpunit/phpunit": "^9.5"
+    "autoload": {
+        "psr-4": {
+            "Renttek\\StateMachine\\": "src"
+        },
+        "files": [
+            "registration.php"
+        ]
     },
-    "scripts": {
-        "install-m2-phpcs": "vendor/bin/phpcs --config-set installed_paths ../../magento/magento-coding-standard/",
-        "post-install-cmd": "@install-m2-phpcs",
-        "post-update-cmd": "@install-m2-phpcs",
-        "phpstan": "vendor/bin/phpstan analyse --no-progress --ansi --configuration=phpstan.neon",
-        "phpcs": "vendor/bin/phpcs src tests",
-        "phpmd": "vendor/bin/phpmd src text cleancode,codesize,design,unusedcode,controversial",
-        "test-static": [
-            "@phpcs",
-            "@phpmd",
-            "@phpstan"
-        ],
-        "test-unit": "vendor/bin/phpunit"
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "magento/composer-dependency-version-audit-plugin": false,
+            "phpstan/extension-installer": true
+        }
     }
 }

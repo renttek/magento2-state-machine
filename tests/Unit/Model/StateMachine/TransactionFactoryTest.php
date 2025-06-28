@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Tests\Unit\Model\StateMachine;
 
@@ -14,44 +16,26 @@ use function PHPUnit\Framework\assertSame;
 
 class TransactionFactoryTest extends TestCase
 {
-    /**
-     * @var LabelFactory|MockObject
-     */
-    private LabelFactory $labelFactoryMock;
-
-    /**
-     * @var Label|MockObject
-     */
-    private Label $labelMock;
-
-    /**
-     * @var StateList|MockObject
-     */
-    private StateList $stateListMock;
-
-    /**
-     * @var State|MockObject
-     */
-    private State $stateMock;
-
-    private TransitionFactory $transactionFactory;
+    private MockObject&StateList $stateListMock;
+    private MockObject&State $stateMock;
+    private TransitionFactory $transitionFactory;
 
     protected function setUp(): void
     {
-        $this->labelFactoryMock = $this->createMock(LabelFactory::class);
-        $this->labelMock        = $this->createMock(Label::class);
+        $labelFactoryMock       = $this->createMock(LabelFactory::class);
+        $labelMock              = $this->createMock(Label::class);
         $this->stateListMock    = $this->createMock(StateList::class);
         $this->stateMock        = $this->createMock(State::class);
 
-        $this->labelFactoryMock
+        $labelFactoryMock
             ->method('createFromConfig')
-            ->willReturn($this->labelMock);
+            ->willReturn($labelMock);
 
         $this->stateListMock
             ->method('getState')
             ->willReturn($this->stateMock);
 
-        $this->transactionFactory = new TransitionFactory($this->labelFactoryMock);
+        $this->transitionFactory = new TransitionFactory($labelFactoryMock);
     }
 
     public function testPassesNameFromConfigToTransition(): void
@@ -62,7 +46,7 @@ class TransactionFactoryTest extends TestCase
             'from' => [],
         ];
 
-        $transition = $this->transactionFactory->createFromConfig($config, $this->stateListMock);
+        $transition = $this->transitionFactory->createFromConfig($config, $this->stateListMock);
 
         assertEquals('my-transition', $transition->getName());
     }
@@ -76,11 +60,11 @@ class TransactionFactoryTest extends TestCase
         ];
 
         $this->stateListMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('getState')
             ->with('foo');
 
-        $transition = $this->transactionFactory->createFromConfig($config, $this->stateListMock);
+        $transition = $this->transitionFactory->createFromConfig($config, $this->stateListMock);
 
         assertSame($this->stateMock, $transition->getTargetState());
     }
@@ -94,16 +78,16 @@ class TransactionFactoryTest extends TestCase
         ];
 
         $this->stateListMock
-            ->expects(self::exactly(4)) // first time is for the target state
+            ->expects($this->exactly(4)) // first time is for the target state
             ->method('getState')
             ->withConsecutive(
-                ['',], // <- target state
+                [''], // <- target state
                 ['foo'],
                 ['bar'],
                 ['baz']
             );
 
-        $transition = $this->transactionFactory->createFromConfig($config, $this->stateListMock);
+        $transition = $this->transitionFactory->createFromConfig($config, $this->stateListMock);
 
         assertSame($this->stateMock, $transition->getSourceStates()->getAll()[0]);
     }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Tests\Unit\Model;
 
@@ -11,28 +13,11 @@ use function PHPUnit\Framework\assertTrue;
 
 class StateMachineTest extends TestCase
 {
-    /**
-     * @var StateMachine\State|MockObject
-     */
-    private StateMachine\State $stateMock;
-
-    /**
-     * @var StateMachine\StateList|MockObject
-     */
-    private StateMachine\StateList $stateListMock;
-
-    /**
-     * @var StateMachine\TransitionList|MockObject
-     */
-    private StateMachine\TransitionList $transitionListMock;
-
-    /**
-     * @var StateMachine\Transition|MockObject
-     */
-    private StateMachine\Transition $transitionMock;
-
-    private StatefulInterface $statefulObject;
-
+    private MockObject&StateMachine\State $stateMock;
+    private MockObject&StateMachine\StateList $stateListMock;
+    private MockObject&StateMachine\TransitionList $transitionListMock;
+    private MockObject&StateMachine\Transition $transitionMock;
+    private StatefulInterface $stateful;
     private StateMachine $stateMachine;
 
     protected function setUp(): void
@@ -51,10 +36,18 @@ class StateMachineTest extends TestCase
             ->willReturn($this->stateMock);
 
         // @formatter:off
-        $this->statefulObject = new class implements StatefulInterface {
+        $this->stateful = new class() implements StatefulInterface {
             private string $state = '';
-            public function getState(): string { return $this->state; }
-            public function setState(string $state): void { $this->state = $state; }
+
+            public function getState(): string
+            {
+                return $this->state;
+            }
+
+            public function setState(string $state): void
+            {
+                $this->state = $state;
+            }
         };
         // @formatter:on
 
@@ -68,36 +61,36 @@ class StateMachineTest extends TestCase
     public function testCanFetchesTransitionFromList(): void
     {
         $this->transitionListMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('getTransition')
             ->with('transition-1');
 
-        $this->stateMachine->can($this->statefulObject, 'transition-1');
+        $this->stateMachine->can($this->stateful, 'transition-1');
     }
 
     public function testCanChecksTransitionIfItCanBeApplied(): void
     {
         $this->transitionMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('canApply')
-            ->with($this->statefulObject)
+            ->with($this->stateful)
             ->willReturn(true);
 
-        assertTrue($this->stateMachine->can($this->statefulObject, ''));
+        assertTrue($this->stateMachine->can($this->stateful, ''));
     }
 
     public function testHasValidStateCheckIfObjectStateExistsInConfiguration(): void
     {
         $state = 'my-state';
 
-        $this->statefulObject->setState($state);
+        $this->stateful->setState($state);
         $this->stateListMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('has')
             ->with($state)
             ->willReturn(true);
 
-        assertTrue($this->stateMachine->hasValidState($this->statefulObject));
+        assertTrue($this->stateMachine->hasValidState($this->stateful));
     }
 
     public function testGetPossibleTransitionsFetchesTransitionsFromList(): void
@@ -105,37 +98,37 @@ class StateMachineTest extends TestCase
         $state       = 'my-state';
         $returnValue = [1, 2, 3];
 
-        $this->statefulObject->setState($state);
+        $this->stateful->setState($state);
 
         $this->transitionListMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('getTransitionsByState')
             ->with($state)
             ->willReturn($returnValue);
 
-        assertEquals($returnValue, $this->stateMachine->getPossibleTransitions($this->statefulObject));
+        assertEquals($returnValue, $this->stateMachine->getPossibleTransitions($this->stateful));
     }
 
     public function testApplySetsNameOfFoundTransitionTargetStateToObject(): void
     {
-        $state = 'my-state';
+        $state          = 'my-state';
         $transitionName = 'transition-1';
 
         $this->transitionListMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('getTransition')
             ->with($transitionName);
 
         $this->transitionMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('getTargetState');
 
         $this->stateMock
             ->method('getName')
             ->willReturn($state);
 
-        $this->stateMachine->apply($this->statefulObject, $transitionName);
+        $this->stateMachine->apply($this->stateful, $transitionName);
 
-        assertEquals($state, $this->statefulObject->getState());
+        assertEquals($state, $this->stateful->getState());
     }
 }

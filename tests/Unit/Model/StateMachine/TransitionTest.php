@@ -1,19 +1,21 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Tests\Unit\Model\StateMachine;
 
+use PHPUnit\Framework\TestCase;
 use Renttek\StateMachine\Model\StatefulInterface;
 use Renttek\StateMachine\Model\StateMachine\Label;
 use Renttek\StateMachine\Model\StateMachine\State;
 use Renttek\StateMachine\Model\StateMachine\StateList;
-use PHPUnit\Framework\TestCase;
 use Renttek\StateMachine\Model\StateMachine\Transition;
 
 class TransitionTest extends TestCase
 {
     public function testCanApplyFindsPossibleStatesUsingStateList(): void
     {
-        $statefulObject = new class implements StatefulInterface {
+        $statefulObject = new class() implements StatefulInterface {
             public function getState(): string
             {
                 return 'mystate';
@@ -25,7 +27,7 @@ class TransitionTest extends TestCase
         };
 
         $stateList = $this->createMock(StateList::class);
-        $stateList->expects(self::once())
+        $stateList->expects($this->once())
             ->method('has')
             ->with('mystate');
 

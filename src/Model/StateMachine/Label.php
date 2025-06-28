@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Model\StateMachine;
 
@@ -7,13 +9,10 @@ namespace Renttek\StateMachine\Model\StateMachine;
  */
 class Label
 {
-    private string $text;
-    private bool $isTranslatable;
-
-    public function __construct(string $text, bool $isTranslatable)
-    {
-        $this->text           = $text;
-        $this->isTranslatable = $isTranslatable;
+    public function __construct(
+        private readonly string $text,
+        private readonly bool $isTranslatable
+    ) {
     }
 
     public function getText(): string

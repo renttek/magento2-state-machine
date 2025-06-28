@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Tests\Unit\Model;
 
@@ -11,10 +13,7 @@ use function PHPUnit\Framework\assertEquals;
 
 class ConfigTest extends TestCase
 {
-    /**
-     * @var DataInterface|MockObject
-     */
-    private DataInterface $dataMock;
+    private MockObject&DataInterface $dataMock;
 
     protected function setUp(): void
     {
@@ -24,7 +23,7 @@ class ConfigTest extends TestCase
     public function testGetStateMachinesReadsConfigFromDataInterface(): void
     {
         $this->dataMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('get')
             ->with('state_machines')
             ->willReturn([]);
@@ -49,8 +48,14 @@ class ConfigTest extends TestCase
         $this->dataMock
             ->method('get')
             ->with('state_machines')
-            ->willReturn(['foo' => ['name' => 'foo']]);
+            ->willReturn([
+                'foo' => [
+                    'name' => 'foo',
+                ],
+            ]);
 
-        assertEquals(['name' => 'foo'], (new Config($this->dataMock))->getStateMachine('foo'));
+        assertEquals([
+            'name' => 'foo',
+        ], (new Config($this->dataMock))->getStateMachine('foo'));
     }
 }

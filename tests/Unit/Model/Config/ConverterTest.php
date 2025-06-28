@@ -1,12 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Tests\Unit\Model\Config;
 
-use Magento\Framework\Config\Dom\UrnResolver;
 use PHPUnit\Framework\MockObject\MockObject;
-use Renttek\StateMachine\Model\Config\Converter;
-use Renttek\StateMachine\Model\Config\SchemaLocator;
 use PHPUnit\Framework\TestCase;
+use Renttek\StateMachine\Model\Config\Converter;
 use Renttek\StateMachine\Model\Config\Validator;
 use Renttek\StateMachine\Util\XmlParserUtils;
 use function PHPUnit\Framework\assertArrayHasKey;
@@ -14,16 +14,8 @@ use function PHPUnit\Framework\assertEquals;
 
 class ConverterTest extends TestCase
 {
-    /**
-     * @var XmlParserUtils|MockObject
-     */
-    private XmlParserUtils $xmlParserMock;
-
-    /**
-     * @var MockObject|Validator
-     */
-    private Validator $validatorMock;
-
+    private MockObject&XmlParserUtils $xmlParserMock;
+    private MockObject&Validator $validatorMock;
     private Converter $converter;
 
     protected function setUp(): void
@@ -34,38 +26,30 @@ class ConverterTest extends TestCase
         $this->converter = new Converter($this->xmlParserMock, $this->validatorMock);
     }
 
-    public function testConvertReturnsEmptyArrayIfParameterIsNotDOMDocument(): void
-    {
-        $this->xmlParserMock
-            ->expects(self::never())
-            ->method('getStateMachines');
-
-        $this->converter->convert(null);
-    }
-
     public function testReadsStateMachinesFromXmlParser(): void
     {
         $documentMock = $this->createMock(\DOMDocument::class);
 
         $this->xmlParserMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('getStateMachines')
             ->with($documentMock);
 
         $this->converter->convert($documentMock);
     }
 
-
     public function testPassesReadXmlConfigToValidator(): void
     {
-        $config = ['foo' => 'bar'];
+        $config = [
+            'foo' => 'bar',
+        ];
 
         $this->xmlParserMock
             ->method('getStateMachines')
             ->willReturn($config);
 
         $this->validatorMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('validate')
             ->with($config);
 
@@ -85,7 +69,9 @@ class ConverterTest extends TestCase
 
     public function testReturnValueOfConvertContainsStateMachineConfigArray(): void
     {
-        $config = ['foo' => 'bar'];
+        $config = [
+            'foo' => 'bar',
+        ];
 
         $documentMock = $this->createMock(\DOMDocument::class);
 

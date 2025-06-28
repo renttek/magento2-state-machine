@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Model\StateMachine;
 
@@ -6,17 +8,12 @@ use Renttek\StateMachine\Model\StatefulInterface;
 
 class Transition
 {
-    private string $name;
-    private Label $label;
-    private State $targetState;
-    private StateList $sourceStates;
-
-    public function __construct(string $name, Label $label, State $targetState, StateList $sourceStates)
-    {
-        $this->name         = $name;
-        $this->label        = $label;
-        $this->sourceStates = $sourceStates;
-        $this->targetState  = $targetState;
+    public function __construct(
+        private readonly string $name,
+        private readonly Label $label,
+        private readonly State $targetState,
+        private readonly StateList $stateList
+    ) {
     }
 
     /**
@@ -40,7 +37,7 @@ class Transition
      */
     public function getSourceStates(): StateList
     {
-        return $this->sourceStates;
+        return $this->stateList;
     }
 
     /**
@@ -51,8 +48,8 @@ class Transition
         return $this->targetState;
     }
 
-    public function canApply(StatefulInterface $object): bool
+    public function canApply(StatefulInterface $stateful): bool
     {
-        return $this->sourceStates->has($object->getState());
+        return $this->stateList->has($stateful->getState());
     }
 }

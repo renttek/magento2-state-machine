@@ -1,9 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Tests\Unit\Model\StateMachine;
 
-use Renttek\StateMachine\Exception\InvalidTransitionException;
 use PHPUnit\Framework\TestCase;
+use Renttek\StateMachine\Exception\InvalidTransitionException;
 use Renttek\StateMachine\Model\StateMachine\StateList;
 use Renttek\StateMachine\Model\StateMachine\Transition;
 use Renttek\StateMachine\Model\StateMachine\TransitionList;
@@ -16,7 +18,7 @@ class TransitionListTest extends TestCase
     {
         $this->expectException(InvalidTransitionException::class);
 
-        (new TransitionList)->getTransition('world');
+        (new TransitionList())->getTransition('world');
     }
 
     public function testGetTransitionFindsStateByName(): void
@@ -45,7 +47,7 @@ class TransitionListTest extends TestCase
 
         $stateListMock = $this->createMock(StateList::class);
         $stateListMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('has')
             ->with('foo');
 

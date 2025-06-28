@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Model;
 
@@ -16,18 +18,12 @@ class StateMachineFactory
      * @var StateMachine[]
      */
     private array $stateMachines;
-    private Config $config;
-    private StateFactory $stateFactory;
-    private TransitionFactory $transitionFactory;
 
     public function __construct(
-        Config $config,
-        StateFactory $stateFactory,
-        TransitionFactory $transitionFactory
+        private readonly Config $config,
+        private readonly StateFactory $stateFactory,
+        private readonly TransitionFactory $transitionFactory
     ) {
-        $this->config            = $config;
-        $this->stateFactory      = $stateFactory;
-        $this->transitionFactory = $transitionFactory;
     }
 
     public function create(string $name): StateMachine
@@ -39,7 +35,7 @@ class StateMachineFactory
 
     public function get(string $name): StateMachine
     {
-        if (!isset($this->stateMachines[$name])) {
+        if (! isset($this->stateMachines[$name])) {
             $this->stateMachines[$name] = $this->create($name);
         }
 
@@ -48,8 +44,6 @@ class StateMachineFactory
 
     /**
      * @param array<string, mixed> $config
-     *
-     * @return StateMachine
      *
      * @throws InvalidStateException
      */
@@ -70,7 +64,7 @@ class StateMachineFactory
     private function getStates(array $config): array
     {
         $states = array_map(
-            [$this->stateFactory, 'createFromConfig'],
+            $this->stateFactory->createFromConfig(...),
             $config['states']
         );
 
@@ -79,15 +73,12 @@ class StateMachineFactory
 
     /**
      * @param array<string, mixed> $config
-     * @param StateList            $stateList
      *
      * @return Transition[]
      */
     private function getTransitions(array $config, StateList $stateList): array
     {
-        $createTransitionFn = function (array $config) use ($stateList) {
-            return $this->transitionFactory->createFromConfig($config, $stateList);
-        };
+        $createTransitionFn = (fn (array $config): \Renttek\StateMachine\Model\StateMachine\Transition => $this->transitionFactory->createFromConfig($config, $stateList));
 
         $transitions = array_map($createTransitionFn, $config['transitions']);
 

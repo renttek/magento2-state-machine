@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Tests\Unit\Model;
 
@@ -13,26 +15,10 @@ use function PHPUnit\Framework\assertEquals;
 
 class StateMachineFactoryTest extends TestCase
 {
-    /**
-     * @var Config|MockObject
-     */
-    private Config $configMock;
-
-    /**
-     * @var StateFactory|MockObject
-     */
-    private StateFactory $stateFactoryMock;
-
-    /**
-     * @var TransitionFactory|MockObject
-     */
-    private TransitionFactory $transitionFactoryMock;
-
-    /**
-     * @var State|MockObject
-     */
-    private State $stateMock;
-
+    private MockObject&Config $configMock;
+    private MockObject&StateFactory $stateFactoryMock;
+    private MockObject&TransitionFactory $transitionFactoryMock;
+    private MockObject&State $stateMock;
     private StateMachineFactory $stateMachineFactory;
 
     protected function setUp(): void
@@ -60,13 +46,15 @@ class StateMachineFactoryTest extends TestCase
             ->willReturn('foo');
 
         $this->configMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('getStateMachine')
             ->with('test')
             ->willReturn(
                 [
                     'initial_state' => 'foo',
-                    'states'        => ['foo' => []],
+                    'states'        => [
+                        'foo' => [],
+                    ],
                     'transitions'   => [],
                 ]
             );
@@ -76,14 +64,16 @@ class StateMachineFactoryTest extends TestCase
 
     public function testCreatesStatesByStateFactory(): void
     {
-        $stateConfig = ['foo' => 'bar'];
+        $stateConfig = [
+            'foo' => 'bar',
+        ];
 
         $this->stateMock
             ->method('getName')
             ->willReturn('foo');
 
         $this->stateFactoryMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('createFromConfig')
             ->with($stateConfig);
 
@@ -92,7 +82,9 @@ class StateMachineFactoryTest extends TestCase
             ->willReturn(
                 [
                     'initial_state' => 'foo',
-                    'states'        => ['foo' => $stateConfig],
+                    'states'        => [
+                        'foo' => $stateConfig,
+                    ],
                     'transitions'   => [],
                 ]
             );
@@ -102,14 +94,16 @@ class StateMachineFactoryTest extends TestCase
 
     public function testCreatesTransitionsByTransitionFactory(): void
     {
-        $transitionConfig = ['foo' => 'bar'];
+        $transitionConfig = [
+            'foo' => 'bar',
+        ];
 
         $this->stateMock
             ->method('getName')
             ->willReturn('foo');
 
         $this->transitionFactoryMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('createFromConfig')
             ->with($transitionConfig);
 
@@ -118,8 +112,12 @@ class StateMachineFactoryTest extends TestCase
             ->willReturn(
                 [
                     'initial_state' => 'foo',
-                    'states'        => ['foo' => []],
-                    'transitions'   => ['bar' => $transitionConfig],
+                    'states'        => [
+                        'foo' => [],
+                    ],
+                    'transitions'   => [
+                        'bar' => $transitionConfig,
+                    ],
                 ]
             );
 
@@ -128,14 +126,16 @@ class StateMachineFactoryTest extends TestCase
 
     public function testGetReturnsTheSameObjectWhenCalledMultipleTimesWithTheSameName(): void
     {
-        $transitionConfig = ['foo' => 'bar'];
+        $transitionConfig = [
+            'foo' => 'bar',
+        ];
 
         $this->stateMock
             ->method('getName')
             ->willReturn('foo');
 
         $this->transitionFactoryMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('createFromConfig')
             ->with($transitionConfig);
 
@@ -144,8 +144,12 @@ class StateMachineFactoryTest extends TestCase
             ->willReturn(
                 [
                     'initial_state' => 'foo',
-                    'states'        => ['foo' => []],
-                    'transitions'   => ['bar' => $transitionConfig],
+                    'states'        => [
+                        'foo' => [],
+                    ],
+                    'transitions'   => [
+                        'bar' => $transitionConfig,
+                    ],
                 ]
             );
 

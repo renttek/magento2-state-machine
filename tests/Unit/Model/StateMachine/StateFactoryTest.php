@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Tests\Unit\Model\StateMachine;
 
@@ -12,22 +14,14 @@ use function PHPUnit\Framework\assertSame;
 
 class StateFactoryTest extends TestCase
 {
-    /**
-     * @var LabelFactory|MockObject
-     */
-    private LabelFactory $labelFactoryMock;
-
-    /**
-     * @var Label|MockObject
-     */
-    private Label $labelMock;
-
+    private MockObject&LabelFactory $labelFactoryMock;
+    private MockObject&Label $labelMock;
     private StateFactory $stateFactory;
 
     protected function setUp(): void
     {
         $this->labelFactoryMock = $this->createMock(LabelFactory::class);
-        $this->labelMock = $this->createMock(Label::class);
+        $this->labelMock        = $this->createMock(Label::class);
 
         $this->labelFactoryMock
             ->method('createFromConfig')
@@ -44,7 +38,7 @@ class StateFactoryTest extends TestCase
         ];
 
         $this->labelFactoryMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('createFromConfig')
             ->with($config);
 
@@ -53,7 +47,9 @@ class StateFactoryTest extends TestCase
 
     public function testPassesNameToState(): void
     {
-        $config = ['name' => 'lorem ipsum'];
+        $config = [
+            'name' => 'lorem ipsum',
+        ];
         $state = $this->stateFactory->createFromConfig($config);
 
         assertEquals('lorem ipsum', $state->getName());
@@ -61,7 +57,9 @@ class StateFactoryTest extends TestCase
 
     public function testCreatesLabelByLabelFactory(): void
     {
-        $config = ['name' => 'lorem ipsum'];
+        $config = [
+            'name' => 'lorem ipsum',
+        ];
         $state = $this->stateFactory->createFromConfig($config);
 
         assertSame($this->labelMock, $state->getLabel());

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Util;
 
@@ -13,119 +15,112 @@ use RuntimeException;
 class XmlParserUtils
 {
     /**
-     * @param DOMNodeList<DOMNode> $nodeList
-     * @param int                  $nodeType
+     * @param DOMNodeList<DOMNode> $domNodeList
      *
      * @return DOMNode[]
      */
-    public function getNodesByType(DOMNodeList $nodeList, int $nodeType): array
+    public function getNodesByType(DOMNodeList $domNodeList, int $nodeType): array
     {
         return array_filter(
-            iterator_to_array($nodeList),
-            static fn(DOMNode $node) => $node->nodeType === $nodeType
+            iterator_to_array($domNodeList),
+            static fn (DOMNode $domNode): bool => $domNode->nodeType === $nodeType
         );
     }
 
-    public function getText(DOMNode $node): string
+    public function getText(DOMNode $domNode): string
     {
-        return (string)$node->nodeValue;
+        return (string) $domNode->nodeValue;
     }
 
-    public function getNameValue(DOMNode $node): string
+    public function getNameValue(DOMNode $domNode): string
     {
-        return $this->getText($this->getAttributeOrException($node, 'name'));
+        return $this->getText($this->getAttributeOrException($domNode, 'name'));
     }
 
-    public function getAttribute(DOMNode $node, string $name): ?DOMNode
+    public function getAttribute(DOMNode $domNode, string $name): ?DOMNode
     {
-        if ($node->attributes === null) {
+        if (! $domNode->attributes instanceof \DOMNamedNodeMap) {
             return null;
         }
 
-        $attribute = $node->attributes->getNamedItem($name);
+        $attribute = $domNode->attributes->getNamedItem($name);
 
-        if ($node->attributes === null) {
+        // @phpstan-ignore-next-line
+        if (! $domNode->attributes instanceof \DOMNamedNodeMap) {
             return null;
         }
 
         return $attribute;
     }
 
-    public function getAttributeOrException(DOMNode $node, string $name): DOMNode
+    public function getAttributeOrException(DOMNode $domNode, string $name): DOMNode
     {
-        $attribute = $this->getAttribute($node, $name);
+        $attribute = $this->getAttribute($domNode, $name);
 
-        if ($attribute === null) {
+        if (! $attribute instanceof \DOMNode) {
             throw new RuntimeException(sprintf('Requested attribute %s not found', $name));
         }
 
         return $attribute;
     }
 
-    public function getTranslateValue(DOMNode $node): bool
+    public function getTranslateValue(DOMNode $domNode): bool
     {
-        $translate = $this->getAttribute($node, 'translate');
+        $translate = $this->getAttribute($domNode, 'translate');
 
-        return $translate instanceof DOMNode
-            ? filter_var($this->getText($translate), FILTER_VALIDATE_BOOLEAN)
-            : false;
+        return $translate instanceof DOMNode && filter_var($this->getText($translate), FILTER_VALIDATE_BOOLEAN);
     }
 
-    public function getInitialState(DOMNode $initialStateNode): string
+    public function getInitialState(DOMNode $domNode): string
     {
-        return $this->getText($initialStateNode);
+        return $this->getText($domNode);
     }
 
     /**
-     * @param DOMNode $statesNode
-     *
      * @return array<string, array>
      */
-    public function getStates(DOMNode $statesNode): array
+    public function getStates(DOMNode $domNode): array
     {
-        $stateNodes = $this->getNodesByType($statesNode->childNodes, XML_ELEMENT_NODE);
-        $states     = array_map(fn ($node) => $this->getState($node), $stateNodes);
+        $stateNodes = $this->getNodesByType($domNode->childNodes, XML_ELEMENT_NODE);
+        $states     = array_map(fn ($node): array => $this->getState($node), $stateNodes);
 
         return array_column($states, null, 'name');
     }
 
     /**
-     * @param DOMNode $stateNode
-     *
      * @return array<string, mixed>
      */
-    public function getState(DOMNode $stateNode): array
+    public function getState(DOMNode $domNode): array
     {
         return [
-            'name'      => $this->getNameValue($stateNode),
-            'text'      => $this->getText($stateNode),
-            'translate' => $this->getTranslateValue($stateNode),
+            'name'      => $this->getNameValue($domNode),
+            'text'      => $this->getText($domNode),
+            'translate' => $this->getTranslateValue($domNode),
         ];
     }
 
     /**
-     * @param DOMNode $transitionsNode
-     *
      * @return array<string, array>
      */
-    public function getTransitions(DOMNode $transitionsNode): array
+    public function getTransitions(DOMNode $domNode): array
     {
-        $transitionNodes = $this->getNodesByType($transitionsNode->childNodes, XML_ELEMENT_NODE);
-        $transitions     = array_map(fn ($node) => $this->getTransition($node), $transitionNodes);
+        $transitionNodes = $this->getNodesByType($domNode->childNodes, XML_ELEMENT_NODE);
+        $transitions     = array_map(fn ($node): array => $this->getTransition($node), $transitionNodes);
 
         return array_column($transitions, null, 'name');
     }
 
     /**
-     * @param DOMNode $transitionNode
-     *
      * @return array<string, mixed>
      */
-    public function getTransition(DOMNode $transitionNode): array
+    public function getTransition(DOMNode $domNode): array
     {
-        $name       = $this->getNameValue($transitionNode);
-        $childNodes = $this->getNodesByType($transitionNode->childNodes, XML_ELEMENT_NODE);
-        $transition = ['name' => $name, 'from' => []];
+        $name       = $this->getNameValue($domNode);
+        $childNodes = $this->getNodesByType($domNode->childNodes, XML_ELEMENT_NODE);
+        $transition = [
+            'name' => $name,
+            'from' => [],
+        ];
 
         foreach ($childNodes as $childNode) {
             switch ($childNode->nodeName) {
@@ -145,28 +140,26 @@ class XmlParserUtils
     }
 
     /**
-     * @param DOMNode $labelNode
-     *
      * @return array<string, mixed>
      */
-    public function getLabel(DOMNode $labelNode): array
+    public function getLabel(DOMNode $domNode): array
     {
         return [
-            'translate' => $this->getTranslateValue($labelNode),
-            'text'      => $this->getText($labelNode),
+            'translate' => $this->getTranslateValue($domNode),
+            'text'      => $this->getText($domNode),
         ];
     }
 
     /**
-     * @param DOMNode $stateMachineNode
-     *
      * @return array<string, mixed>
      */
-    public function getStateMachine(DOMNode $stateMachineNode): array
+    public function getStateMachine(DOMNode $domNode): array
     {
-        $name         = $this->getNameValue($stateMachineNode);
-        $childNodes   = $this->getNodesByType($stateMachineNode->childNodes, XML_ELEMENT_NODE);
-        $stateMachine = ['name' => $name];
+        $name         = $this->getNameValue($domNode);
+        $childNodes   = $this->getNodesByType($domNode->childNodes, XML_ELEMENT_NODE);
+        $stateMachine = [
+            'name' => $name,
+        ];
 
         foreach ($childNodes as $childNode) {
             switch ($childNode->nodeName) {
@@ -186,16 +179,15 @@ class XmlParserUtils
     }
 
     /**
-     * @param DOMDocument $document
-     *
      * @return array<string, array>
      */
-    public function getStateMachines(DOMDocument $document): array
+    public function getStateMachines(DOMDocument $domDocument): array
     {
-        $stateMachineNodes = $document->getElementsByTagName('state_machine');
+        $stateMachineNodes = $domDocument->getElementsByTagName('state_machine');
 
         $stateMachineNodes = iterator_to_array($stateMachineNodes);
-        $stateMachine      = array_map(fn ($node) => $this->getStateMachine($node), $stateMachineNodes);
+
+        $stateMachine      = array_map(fn ($node): array => $this->getStateMachine($node), $stateMachineNodes);
 
         return array_column($stateMachine, null, 'name');
     }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Model\Config;
 
@@ -7,7 +9,7 @@ use Magento\Framework\Config\SchemaLocatorInterface;
 
 class SchemaLocator implements SchemaLocatorInterface
 {
-    private string $schema;
+    private readonly string $schema;
 
     public function __construct(UrnResolver $urnResolver)
     {

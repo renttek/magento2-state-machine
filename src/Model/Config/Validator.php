@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Model\Config;
 
@@ -32,7 +34,7 @@ class Validator
     {
         $initialState = $stateMachine['initial_state'];
 
-        if (!$this->stateExists($initialState, $stateMachine)) {
+        if (! $this->stateExists($initialState, $stateMachine)) {
             $message = sprintf("Invalid initial state: state '%s' does not exist", $initialState);
             throw new InvalidConfigurationException($message);
         }
@@ -49,7 +51,7 @@ class Validator
         $name   = $transition['name'];
         $target = $transition['to'];
 
-        if (!$this->stateExists($target, $stateMachine)) {
+        if (! $this->stateExists($target, $stateMachine)) {
             $message = sprintf("Invalid transition '%s': target state '%s' does not exist", $name, $target);
             throw new InvalidConfigurationException($message);
         }
@@ -67,7 +69,7 @@ class Validator
         $sources = $transition['from'];
 
         foreach ($sources as $source) {
-            if (!$this->stateExists($source, $stateMachine)) {
+            if (! $this->stateExists($source, $stateMachine)) {
                 $message = sprintf("Invalid transition '%s': source state '%s' does not exist", $name, $source);
                 throw new InvalidConfigurationException($message);
             }
@@ -75,10 +77,7 @@ class Validator
     }
 
     /**
-     * @param string               $state
      * @param array<string, mixed> $stateMachine
-     *
-     * @return bool
      */
     private function stateExists(string $state, array $stateMachine): bool
     {

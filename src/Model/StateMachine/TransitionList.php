@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Model\StateMachine;
 
@@ -9,7 +11,7 @@ class TransitionList
     /**
      * @var Transition[]
      */
-    private array $transitions;
+    private readonly array $transitions;
 
     public function __construct(Transition ...$transitions)
     {
@@ -17,10 +19,6 @@ class TransitionList
     }
 
     /**
-     * @param string $name
-     *
-     * @return Transition
-     *
      * @throws InvalidTransitionException
      */
     public function getTransition(string $name): Transition
@@ -35,13 +33,11 @@ class TransitionList
     }
 
     /**
-     * @param string $state
-     *
      * @return Transition[]
      */
     public function getTransitionsByState(string $state): array
     {
-        return $this->filter(fn (Transition $t)=> $t->getSourceStates()->has($state));
+        return $this->filter(fn (Transition $transition): bool => $transition->getSourceStates()->has($state));
     }
 
     /**
@@ -53,8 +49,6 @@ class TransitionList
     }
 
     /**
-     * @param callable $fn
-     *
      * @return Transition[]
      */
     private function filter(callable $fn): array

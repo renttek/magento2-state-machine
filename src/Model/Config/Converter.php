@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Model\Config;
 
@@ -9,18 +11,13 @@ use Renttek\StateMachine\Util\XmlParserUtils;
 
 class Converter implements ConverterInterface
 {
-    private XmlParserUtils $xmlParserUtils;
-    private Validator $validator;
-
-    public function __construct(XmlParserUtils $xmlParserUtils, Validator $validator)
-    {
-        $this->xmlParserUtils = $xmlParserUtils;
-        $this->validator      = $validator;
+    public function __construct(
+        private readonly XmlParserUtils $xmlParserUtils,
+        private readonly Validator $validator
+    ) {
     }
 
     /**
-     * @param DOMDocument $source
-     *
      * @return array<string, array>
      *
      * @throws InvalidConfigurationException
@@ -29,23 +26,17 @@ class Converter implements ConverterInterface
      */
     public function convert($source): array
     {
-        if (!$source instanceof DOMDocument) {
-            return [];
-        }
-
         return [
             'state_machines' => $this->getStateMachines($source),
         ];
     }
 
     /**
-     * @param DOMDocument $document
-     *
      * @return array<array>
      */
-    private function getStateMachines(DOMDocument $document): array
+    private function getStateMachines(DOMDocument $domDocument): array
     {
-        $stateMachines = $this->xmlParserUtils->getStateMachines($document);
+        $stateMachines = $this->xmlParserUtils->getStateMachines($domDocument);
 
         $this->validator->validate($stateMachines);
 

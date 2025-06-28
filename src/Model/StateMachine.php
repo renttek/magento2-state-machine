@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Model;
 
@@ -10,53 +12,44 @@ use Renttek\StateMachine\Model\StateMachine\TransitionList;
 
 class StateMachine
 {
-    private State $initialState;
-    private StateList $states;
-    private TransitionList $transitions;
-
-    public function __construct(State $initialState, StateList $states, TransitionList $transitions)
-    {
-        $this->initialState = $initialState;
-        $this->states      = $states;
-        $this->transitions = $transitions;
+    public function __construct(
+        private readonly State $initialState,
+        private readonly StateList $stateList,
+        private readonly TransitionList $transitionList
+    ) {
     }
 
-    public function can(StatefulInterface $object, string $transition): bool
+    public function can(StatefulInterface $stateful, string $transition): bool
     {
-        return $this->transitions
+        return $this->transitionList
             ->getTransition($transition)
-            ->canApply($object);
+            ->canApply($stateful);
     }
 
     /**
-     * @param StatefulInterface $object
-     * @param string            $transition
-     *
      * @throws InvalidTransitionException
      */
-    public function apply(StatefulInterface $object, string $transition): void
+    public function apply(StatefulInterface $stateful, string $transition): void
     {
-        $targetState = $this->transitions
+        $targetState = $this->transitionList
             ->getTransition($transition)
             ->getTargetState()
             ->getName();
 
-        $object->setState($targetState);
+        $stateful->setState($targetState);
     }
 
     /**
-     * @param StatefulInterface $object
-     *
      * @return Transition[]
      */
-    public function getPossibleTransitions(StatefulInterface $object): array
+    public function getPossibleTransitions(StatefulInterface $stateful): array
     {
-        return $this->transitions->getTransitionsByState($object->getState());
+        return $this->transitionList->getTransitionsByState($stateful->getState());
     }
 
-    public function hasValidState(StatefulInterface $object): bool
+    public function hasValidState(StatefulInterface $stateful): bool
     {
-        return $this->states->has($object->getState());
+        return $this->stateList->has($stateful->getState());
     }
 
     /**

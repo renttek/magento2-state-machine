@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Tests\Unit\Model\StateMachine;
 
@@ -16,7 +18,7 @@ class LabelFactoryTest extends TestCase
             'translate' => true,
         ];
 
-        $label = (new LabelFactory)->createFromConfig($config);
+        $label = (new LabelFactory())->createFromConfig($config);
 
         assertEquals('lorem ipsum', $label->getText());
         assertTrue($label->isTranslatable());

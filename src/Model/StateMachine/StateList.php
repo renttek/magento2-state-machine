@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Model\StateMachine;
 
@@ -9,7 +11,7 @@ class StateList
     /**
      * @var State[]
      */
-    private array $states;
+    private readonly array $states;
 
     public function __construct(State ...$states)
     {
@@ -18,9 +20,9 @@ class StateList
 
     public function getState(string $name): State
     {
-        foreach ($this->states as $states) {
-            if ($states->getName() === $name) {
-                return $states;
+        foreach ($this->states as $state) {
+            if ($state->getName() === $name) {
+                return $state;
             }
         }
 
@@ -39,9 +41,10 @@ class StateList
     {
         try {
             $this->getState($name);
-        } catch (InvalidStateException $invalidStateException) {
+        } catch (InvalidStateException) {
             return false;
         }
+
         return true;
     }
 }

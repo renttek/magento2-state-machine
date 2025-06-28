@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Model\StateMachine;
 
@@ -6,8 +8,6 @@ class LabelFactory
 {
     /**
      * @param array<string, mixed> $config
-     *
-     * @return Label
      */
     public function createFromConfig(array $config): Label
     {

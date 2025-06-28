@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Tests\Unit\Model\Config;
 
@@ -18,7 +20,7 @@ class ValidatorTest extends TestCase
             'states'        => [],
         ];
 
-        (new Validator)->validate([$config]);
+        (new Validator())->validate([$config]);
     }
 
     public function testThrowsAnExceptionIfOIneOrMoreSourceStatesDoNotExist(): void
@@ -27,14 +29,19 @@ class ValidatorTest extends TestCase
 
         $config = [
             'initial_state' => 'foo',
-            'states'        => ['foo' => '', 'bar' => ''],
-            'transitions'   => ['do' => [
-                'name' => '',
-                'from' => ['baz']
-            ]],
+            'states'        => [
+                'foo' => '',
+                'bar' => '',
+            ],
+            'transitions'   => [
+                'do' => [
+                    'name' => '',
+                    'from' => ['baz'],
+                ],
+            ],
         ];
 
-        (new Validator)->validate([$config]);
+        (new Validator())->validate([$config]);
     }
 
     public function testThrowsAnExceptionIfTargetStateDoNotExist(): void
@@ -43,30 +50,40 @@ class ValidatorTest extends TestCase
 
         $config = [
             'initial_state' => 'foo',
-            'states'        => ['foo' => '', 'bar' => ''],
-            'transitions'   => ['do' => [
-                'name' => '',
-                'from' => [],
-                'to'   => 'baz'
-            ]],
+            'states'        => [
+                'foo' => '',
+                'bar' => '',
+            ],
+            'transitions'   => [
+                'do' => [
+                    'name' => '',
+                    'from' => [],
+                    'to'   => 'baz',
+                ],
+            ],
         ];
 
-        (new Validator)->validate([$config]);
+        (new Validator())->validate([$config]);
     }
 
     public function testThrowsNoExceptionIfEverythingIsValid(): void
     {
         $config = [
             'initial_state' => 'foo',
-            'states'        => ['foo' => '', 'bar' => ''],
-            'transitions'   => ['do' => [
-                'name' => 'foo-bar',
-                'from' => ['foo'],
-                'to'   => 'bar'
-            ]],
+            'states'        => [
+                'foo' => '',
+                'bar' => '',
+            ],
+            'transitions'   => [
+                'do' => [
+                    'name' => 'foo-bar',
+                    'from' => ['foo'],
+                    'to'   => 'bar',
+                ],
+            ],
         ];
 
-        (new Validator)->validate([$config]);
+        (new Validator())->validate([$config]);
 
         assertTrue(true);
     }

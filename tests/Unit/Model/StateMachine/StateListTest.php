@@ -1,15 +1,16 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Tests\Unit\Model\StateMachine;
 
+use PHPUnit\Framework\TestCase;
 use Renttek\StateMachine\Exception\InvalidStateException;
 use Renttek\StateMachine\Model\StateMachine\Label;
 use Renttek\StateMachine\Model\StateMachine\State;
 use Renttek\StateMachine\Model\StateMachine\StateList;
-use PHPUnit\Framework\TestCase;
 use function PHPUnit\Framework\assertCount;
 use function PHPUnit\Framework\assertFalse;
-use function PHPUnit\Framework\assertNull;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
 
@@ -41,22 +42,22 @@ class StateListTest extends TestCase
     {
         $this->expectException(InvalidStateException::class);
 
-        (new StateList)->getState('world');
+        (new StateList())->getState('world');
     }
 
     public function testHasReturnsTrueIfStateWasFound(): void
     {
         $label  = $this->createMock(Label::class);
-        $state1 = new State('hello', $label);
+        $state  = new State('hello', $label);
 
-        assertTrue((new StateList($state1))->has('hello'));
+        assertTrue((new StateList($state))->has('hello'));
     }
 
     public function testHasReturnsFalseIfStateWasNotFound(): void
     {
         $label  = $this->createMock(Label::class);
-        $state1 = new State('hello', $label);
+        $state  = new State('hello', $label);
 
-        assertFalse((new StateList($state1))->has('world'));
+        assertFalse((new StateList($state))->has('world'));
     }
 }

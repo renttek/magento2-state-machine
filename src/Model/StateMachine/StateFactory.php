@@ -1,20 +1,18 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Model\StateMachine;
 
 class StateFactory
 {
-    private LabelFactory $labelFactory;
-
-    public function __construct(LabelFactory $labelFactory)
-    {
-        $this->labelFactory = $labelFactory;
+    public function __construct(
+        private readonly LabelFactory $labelFactory
+    ) {
     }
 
     /**
      * @param array<string, mixed> $config
-     *
-     * @return State
      */
     public function createFromConfig(array $config): State
     {

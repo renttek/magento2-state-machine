@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Model\StateMachine;
 
@@ -7,13 +9,10 @@ namespace Renttek\StateMachine\Model\StateMachine;
  */
 class State
 {
-    private string $name;
-    private Label $label;
-
-    public function __construct(string $name, Label $label)
-    {
-        $this->name  = $name;
-        $this->label = $label;
+    public function __construct(
+        private readonly string $name,
+        private readonly Label $label
+    ) {
     }
 
     public function getName(): string

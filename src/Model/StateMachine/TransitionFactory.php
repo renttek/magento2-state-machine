@@ -1,21 +1,18 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Renttek\StateMachine\Model\StateMachine;
 
 class TransitionFactory
 {
-    private LabelFactory $labelFactory;
-
-    public function __construct(LabelFactory $labelFactory)
-    {
-        $this->labelFactory = $labelFactory;
+    public function __construct(
+        private readonly LabelFactory $labelFactory
+    ) {
     }
 
     /**
      * @param array<string, mixed> $config
-     * @param StateList            $stateList
-     *
-     * @return Transition
      */
     public function createFromConfig(array $config, StateList $stateList): Transition
     {
@@ -31,25 +28,24 @@ class TransitionFactory
         );
     }
 
-    public function create(string $name, Label $label, State $targetState, StateList $sourceStates): Transition
+    public function create(string $name, Label $label, State $targetState, StateList $stateList): Transition
     {
         return new Transition(
             $name,
             $label,
             $targetState,
-            $sourceStates
+            $stateList
         );
     }
 
     /**
      * @param array<string, mixed> $config
-     * @param StateList            $stateList
      *
      * @return State[]
      */
     private function getSourceStates(array $config, StateList $stateList): array
     {
-        $states = array_map([$stateList, 'getState'], $config['from']);
+        $states = array_map($stateList->getState(...), $config['from']);
         $states = array_filter($states);
 
         return array_values($states);
